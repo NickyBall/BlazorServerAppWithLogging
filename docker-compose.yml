@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  log.service:
+    image: datalust/seq
+    container_name: log
+    environment:
+      - ACCEPT_EULA=Y
+    volumes:
+      - worker-log-data:/data
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+  web:
+    depends_on:
+      - log.service
+    links:
+      - log.service
+    image: ${DOCKER_REGISTRY-}blazorserverappwithlogging
+    build:
+      context: .
+      dockerfile: BlazorServerAppWithLogging/Dockerfile
+
+volumes:
+  worker-log-data:
+    name: worker-log-data
